@@ -1,0 +1,19 @@
+[project]
+name = "rail-journey-recorder"
+version = "0.1.0"
+description = "Default template for PDM package"
+authors = [
+    {name = "Vincent Son", email = "107471539+szw0407@users.noreply.github.com"},
+]
+dependencies = [
+    "fastapi[all]>=0.112.1",
+    "pyjwt>=2.9.0",
+    "passlib[bcrypt]>=1.7.4",
+]
+requires-python = "==3.12.*"
+readme = "README.md"
+license = {text = "GPL-v3"}
+
+
+[tool.pdm]
+distribution = false
