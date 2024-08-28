@@ -5,19 +5,32 @@ import multiprocessing
 
 BASE_URL = "http://cnrail.geogv.org/api/v1/"
 
-data = []
+# data = []
 
 
-def get_route_data(i, url):
-    a = httpx.get(
-        url + str(i).zfill(4) + "?locale=zhcn&query-override=&requestGeom=true",
-        timeout=100,
-    )
+def get_route_data(i, url, char):
+    while True:
+        try:
+            a = httpx.get(
+                url+ char + str(i).zfill(4) + "?locale=zhcn&query-override=&requestGeom=true"
+            )
+        except Exception as e:
+            pass
+        else:
+            break
     if a.status_code == 200:
-        print(i)
+        print(char, i)
         # print(a.json())
-        data.append(a.json())
-        print("Data length: ", len(data))
+        # data.append(a.json())
+        json.dump(
+            a.json(),
+            open("data.json", "a", encoding="UTF-8"),   # append mode
+            ensure_ascii=False,
+            indent=4,  # indent 4 spaces
+        )
+        with open("data.json", "a") as f:
+            f.write(",\n")
+        # print("Data length: ", len(data))
 
 
 # async def get_route():
@@ -55,20 +68,24 @@ if __name__ == "__main__":
     multiprocessing.set_start_method("spawn")
     chars = ("K", "T", "Z", "D", "G", "C", "", "S", "Y")
     url = BASE_URL + "route/CN~"
+
+    with open("data.json", "w") as f:
+        f.write("[\n")
     for char in chars:
-        url += char
         tasks = []
         for i in range(1, 10000):
-            tasks.append(multiprocessing.Process(target=get_route_data, args=(i, url)))
+            tasks.append(multiprocessing.Process(target=get_route_data, args=(i, url, char)))
         k = 0
         for task in tasks:
             k += 1
-            print("Starting task ", k)
+            # print("Starting task ", k)
             task.start()
         for task in tasks:
             task.join()
             k -= 1
             print("Remaining tasks ", k)
-    json.dump(
-        data, open("data.json", "w", encoding="UTF-8"), ensure_ascii=False, indent=4
-    )
+    with open("data.json", "a") as f:
+        f.write("]\n")
+    # json.dump(
+    #     data, open("data.json", "w", encoding="UTF-8"), ensure_ascii=False, indent=4
+    # )
