@@ -5,9 +5,6 @@ import multiprocessing
 
 BASE_URL = "http://cnrail.geogv.org/api/v1/"
 
-# data = []
-
-
 def get_route_data(i, url, char):
     while True:
         try:
@@ -20,16 +17,9 @@ def get_route_data(i, url, char):
             break
     if a.status_code == 200:
         print(char, i)
-        # print(a.json())
-        # data.append(a.json())
-        json.dump(
-            a.json(),
-            open("data.json", "a", encoding="UTF-8"),   # append mode
-            ensure_ascii=False,
-            indent=4,  # indent 4 spaces
-        )
-        with open("data.json", "a") as f:
-            f.write(",\n")
+        s = json.dumps(a.json(), ensure_ascii=False, indent=4)
+        with open("data.json", "a", encoding='UTF-8') as f:
+            f.write(s+",\n")
         # print("Data length: ", len(data))
 
 
@@ -86,6 +76,3 @@ if __name__ == "__main__":
             print("Remaining tasks ", k)
     with open("data.json", "a") as f:
         f.write("]\n")
-    # json.dump(
-    #     data, open("data.json", "w", encoding="UTF-8"), ensure_ascii=False, indent=4
-    # )
